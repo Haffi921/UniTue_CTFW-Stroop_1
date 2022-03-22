@@ -1,0 +1,12 @@
+{
+    "uuid": "77d242d0-60d4-4208-8284-606cce2c9783",
+    "title": "CSPC Flanker Task 2",
+    "dirName": "cspc_flanker_task_2",
+    "componentList": [
+        {
+            "uuid": "5dad2b0b-9c5f-43b1-95fc-e647af19982c",
+            "title": "experiment",
+            "htmlFilePath": "experiment/index.html"
+        }
+    ]
+}

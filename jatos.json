@@ -1,0 +1,6 @@
+{
+  "title": "CSPC Flanker Task 2",
+  "components": {
+    "experiment": "src/experiment"
+  }
+}
