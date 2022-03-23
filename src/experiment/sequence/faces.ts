@@ -1,6 +1,6 @@
 import { range } from "lodash";
 
-interface FacesForRating {
+interface FaceForRating {
   img: string;
   rating: number;
   gender: string;
@@ -11,7 +11,7 @@ function get_indexes(min: number, max: number): string[] {
 }
 
 const FACES_NAMES = ["HM", "HW"];
-const FACES_INDEXES = get_indexes(1, 60);
+const FACES_INDEXES = get_indexes(1, 20);
 
 const FACES_IMAGES: string[] = FACES_NAMES.reduce((arr, name) => {
   arr.push(...FACES_INDEXES.map((index) => `faces/${name + index}.bmp`));
@@ -19,7 +19,7 @@ const FACES_IMAGES: string[] = FACES_NAMES.reduce((arr, name) => {
   return arr;
 }, []);
 
-const FACES: FacesForRating[] = FACES_IMAGES.map((image) => {
+const FACES: FaceForRating[] = FACES_IMAGES.map((image) => {
   return {
     img: image,
     rating: null,
@@ -27,4 +27,4 @@ const FACES: FacesForRating[] = FACES_IMAGES.map((image) => {
   };
 });
 
-export { FACES, FACES_IMAGES, FacesForRating };
+export { FACES, FACES_IMAGES, FaceForRating };

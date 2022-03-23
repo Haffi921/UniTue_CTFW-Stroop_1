@@ -4,15 +4,14 @@ import BrowserCheckPlugin from "@jspsych/plugin-browser-check";
 import PreloadPlugin from "@jspsych/plugin-preload";
 import ImageSliderResponsePlugin from "@jspsych/plugin-image-slider-response";
 
-import { sortBy, shuffle } from "lodash";
-
-import { FACES, FACES_IMAGES, FacesForRating } from "./sequence/faces";
+import { FACES, FACES_IMAGES, FaceForRating } from "./sequence/faces";
+import { get_blocks, FaceForTrial } from "./sequence/trial_selection";
 
 function run() {
   const jsPsych = initJsPsych();
 
   const timeline = [];
-  let SORTED_FACES: object[];
+  let TRIAL_SEQUENCE: FaceForTrial[][];
 
   timeline.push({
     type: BrowserCheckPlugin,
@@ -37,7 +36,7 @@ function run() {
         labels: ["Very unpleasant (-100", "0", "Very pleasant (100)"],
         on_finish(data) {
           FACES.find(
-            (face: FacesForRating) =>
+            (face: FaceForRating) =>
               face.img === jsPsych.timelineVariable("img")
           ).rating = Math.abs(data.response);
         },
@@ -46,25 +45,8 @@ function run() {
     timeline_variables: FACES,
     randomize_order: true,
     on_timeline_finish() {
-      const gender_equalizer = {
-        male: 2,
-        female: 2,
-      };
-      // This does not do well with people who are rated the same; it puts preference on those who are first in the original list
-      // Prerandomizing before the rating would put preference on the first shown faces
-      // Randomizing after the rating would possibly solve this issue
-      SORTED_FACES = sortBy(shuffle(FACES), ["rating"]).reduce(
-        (arr: object[], face: any) => {
-          if (gender_equalizer[face.gender] > 0) {
-            arr.push(face);
-            --gender_equalizer[face.gender];
-          }
-
-          return arr;
-        },
-        []
-      );
-      console.log(SORTED_FACES);
+      TRIAL_SEQUENCE = get_blocks(FACES, 10);
+      console.log(TRIAL_SEQUENCE);
     },
   });
 
