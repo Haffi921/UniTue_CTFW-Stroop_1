@@ -4,6 +4,7 @@ interface FaceForRating {
   img: string;
   rating: number;
   gender: string;
+  correct_key: string;
 }
 
 function get_indexes(min: number, max: number): string[] {
@@ -11,7 +12,7 @@ function get_indexes(min: number, max: number): string[] {
 }
 
 const FACES_NAMES = ["HM", "HW"];
-const FACES_INDEXES = get_indexes(1, 20);
+const FACES_INDEXES = get_indexes(1, 60);
 
 const FACES_IMAGES: string[] = FACES_NAMES.reduce((arr, name) => {
   arr.push(...FACES_INDEXES.map((index) => `faces/${name + index}.bmp`));
@@ -19,11 +20,16 @@ const FACES_IMAGES: string[] = FACES_NAMES.reduce((arr, name) => {
   return arr;
 }, []);
 
+const GROUP = 0; //Math.round(Math.random());
+
 const FACES: FaceForRating[] = FACES_IMAGES.map((image) => {
+  const gender = image.indexOf("HM") === -1 ? "female" : "male";
   return {
     img: image,
     rating: null,
-    gender: image.indexOf("HM") === -1 ? "female" : "male",
+    gender: gender,
+    correct_key:
+      gender === "male" ? (GROUP === 0 ? "d" : "l") : GROUP === 0 ? "l" : "d",
   };
 });
 

@@ -1,6 +1,6 @@
 {
   "name": "unitue_ctfw-stroop_1",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Face-Word Stroop Task",
   "scripts": {
     "start": "gulp serve",
@@ -16,7 +16,7 @@
     "@jspsych/plugin-browser-check": "^1.0.0",
     "@jspsych/plugin-external-html": "^1.1.0",
     "@jspsych/plugin-fullscreen": "^1.1.0",
-    "@jspsych/plugin-html-slider-response": "^1.1.0",
+    "@jspsych/plugin-html-keyboard-response": "^1.1.0",
     "@jspsych/plugin-image-slider-response": "^1.1.0",
     "@jspsych/plugin-instructions": "^1.1.0",
     "@jspsych/plugin-preload": "^1.1.0",

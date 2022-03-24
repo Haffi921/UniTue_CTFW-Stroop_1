@@ -92,8 +92,10 @@ class RotatingIndexArray {
     this.indexArray.push(...Array(seed[1] * multiplier).fill(1));
   }
 
-  forward() {
-    this.indexArray.push(this.indexArray.shift());
+  forward(i: number = 1) {
+    for (let rounds = 0; rounds < i; ++rounds) {
+      this.indexArray.push(this.indexArray.shift());
+    }
   }
 }
 
@@ -108,44 +110,26 @@ function create_blocks(
   }
 
   const pc_faces = {
-    male: {
-      mostly_congruent: faces.filter(
-        (face: FaceForStroop) =>
-          face.gender === "male" &&
-          face.proportion_congruency === ProportionCongruency.mostly_congruent
-      ),
-      mostly_incongruent: faces.filter(
-        (face: FaceForStroop) =>
-          face.gender === "male" &&
-          face.proportion_congruency === ProportionCongruency.mostly_incongruent
-      ),
-    },
-    female: {
-      mostly_congruent: faces.filter(
-        (face: FaceForStroop) =>
-          face.gender === "female" &&
-          face.proportion_congruency === ProportionCongruency.mostly_congruent
-      ),
-      mostly_incongruent: faces.filter(
-        (face: FaceForStroop) =>
-          face.gender === "female" &&
-          face.proportion_congruency === ProportionCongruency.mostly_incongruent
-      ),
-    },
+    mostly_congruent: faces.filter(
+      (face: FaceForStroop) =>
+        face.proportion_congruency === ProportionCongruency.mostly_congruent
+    ),
+    mostly_incongruent: faces.filter(
+      (face: FaceForStroop) =>
+        face.proportion_congruency === ProportionCongruency.mostly_incongruent
+    ),
   };
 
-  for (const gender of Object.keys(pc_faces)) {
-    for (const PC of Object.keys(pc_faces[gender])) {
-      const rotating_index = new RotatingIndexArray(
-        ProportionCongruencySeed[PC],
-        pc_faces[gender][PC].length
-      );
-      pc_faces[gender][PC] = shuffle(pc_faces[gender][PC]);
+  for (const PC of Object.keys(pc_faces)) {
+    const rotating_index = new RotatingIndexArray(
+      ProportionCongruencySeed[PC],
+      pc_faces[PC].length
+    );
+    pc_faces[PC] = shuffle(pc_faces[PC]);
 
-      for (const block in sequence) {
-        const trial_faces = (<FaceForTrial[]>(
-          cloneDeep(pc_faces[gender][PC])
-        )).map((face: FaceForTrial, index: number) => {
+    for (const block in sequence) {
+      const trial_faces = (<FaceForTrial[]>cloneDeep(pc_faces[PC])).map(
+        (face: FaceForTrial, index: number) => {
           face.congruency =
             rotating_index.indexArray[index] === 0
               ? Congruency.congruent
@@ -162,21 +146,18 @@ function create_blocks(
           }
 
           return face;
-        });
+        }
+      );
 
-        console.log(sequence);
-        sequence[block].push(...shuffle(trial_faces));
+      sequence[block].push(...shuffle(trial_faces));
 
-        rotating_index.forward();
-      }
+      rotating_index.forward(3);
+    }
 
-      for (const block in sequence) {
-        sequence[block] = shuffle(sequence[block]);
-      }
+    for (const block in sequence) {
+      sequence[block] = shuffle(sequence[block]);
     }
   }
-
-  console.log(sequence);
 
   return shuffle(sequence);
 }

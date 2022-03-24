@@ -1,10 +1,7 @@
-import { GROUPS } from "./experiment/sequence/groups";
-
 function CopyJsonInputToBatch() {
   let error_counter = 0;
   const data = {
-    "condition-bool": Array(GROUPS.length).fill(true),
-    "condition-counter": Array(GROUPS.length).fill(0),
+    participants_finished: 0,
   };
   const dataFields = Object.keys(data);
 
