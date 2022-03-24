@@ -1,13 +1,21 @@
 import { JsPsych } from "jspsych";
 import HtmlKeyboardResponsePlugin from "@jspsych/plugin-html-keyboard-response";
+import { FaceForTrial } from "./trial_selection";
 
-export function trial(jsPsych: JsPsych): object[] {
+export async function trial(
+  jsPsych: JsPsych,
+  sequence: FaceForTrial[][],
+  base_timeline: any[]
+) {
   const get = jsPsych.timelineVariable;
 
   function createDisplay(): string {
     return (
-      `<img src="${get("img")}"></img>` +
-      `<p class="distractor">${get("distractor")}</p>`
+      "<div class='trial_container'>" +
+      `<img class='target' src='${get("img")}' />` +
+      `<div class='distractor_container ${get("position")}'>` +
+      `<p class="distractor">${get("distractor")}</p>` +
+      "</div></div>"
     );
   }
 
@@ -43,5 +51,14 @@ export function trial(jsPsych: JsPsych): object[] {
     },
   };
 
-  return [fixation, target];
+  const timeline = [...base_timeline];
+
+  for (let seq of sequence) {
+    timeline.push({
+      timeline: [fixation, target],
+      timeline_variables: seq,
+    });
+  }
+
+  await jsPsych.run(timeline);
 }

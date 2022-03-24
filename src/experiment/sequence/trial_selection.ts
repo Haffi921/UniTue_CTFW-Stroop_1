@@ -139,10 +139,10 @@ function create_blocks(
 
           if (face.gender === "male") {
             face.distractor =
-              rotating_index.indexArray[index] === 0 ? "Man" : "Woman";
+              rotating_index.indexArray[index] === 0 ? "MAN" : "WOMAN";
           } else {
             face.distractor =
-              rotating_index.indexArray[index] === 0 ? "Woman" : "Man";
+              rotating_index.indexArray[index] === 0 ? "WOMAN" : "MAN";
           }
 
           return face;

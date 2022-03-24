@@ -22,6 +22,40 @@ $font-size: 18pt;
   width: 65vw;
 }
 
+.trial_container {
+  position: absolute;
+  height: 472px;
+  width: 384px;
+  top: calc(50% - 236px);
+  left: calc(50% - 192px);
+  box-sizing: border-box;
+
+  .distractor_container {
+    position: absolute;
+    height: 50%;
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    white-space: pre;
+
+    .distractor {
+      color: red;
+      font-size: 62px;
+      font-weight: bold;
+    }
+  }
+
+  .upper {
+    top: 0;
+  }
+
+  .lower {
+    bottom: 0;
+  }
+}
+
 // .display {
 //   position: absolute;
 //   margin: 15vh 10vw;
