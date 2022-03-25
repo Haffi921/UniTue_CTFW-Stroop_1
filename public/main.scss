@@ -22,6 +22,10 @@ $font-size: 18pt;
   width: 65vw;
 }
 
+.fixation_cross {
+  font-size: 46px;
+}
+
 .trial_container {
   position: absolute;
   height: 472px;
@@ -32,7 +36,7 @@ $font-size: 18pt;
 
   .distractor_container {
     position: absolute;
-    height: 50%;
+    height: 80%;
     width: 100%;
 
     display: flex;
@@ -42,8 +46,8 @@ $font-size: 18pt;
 
     .distractor {
       color: red;
-      font-size: 62px;
-      font-weight: bold;
+      font-size: 74px;
+      font-weight: bolder;
     }
   }
 
@@ -56,76 +60,7 @@ $font-size: 18pt;
   }
 }
 
-// .display {
-//   position: absolute;
-//   margin: 15vh 10vw;
-//   height: 70vh;
-//   width: 1200px;
-//   max-width: 80vw;
-//   top: 0;
-//   left: calc(50% - min(600px, 40vw) - 10vw);
-//   box-sizing: border-box;
-
-//   .top,
-//   .bottom {
-//     position: absolute;
-//     border: 3px transparent solid;
-//     height: 280px;
-//     max-height: 30vh;
-//     width: 500px;
-//     left: calc(50% - min(250px, 40vw));
-
-//     display: flex;
-//     flex-direction: column;
-//     justify-content: center;
-//     white-space: pre;
-//   }
-
-//   .top {
-//     top: 0;
-//   }
-
-//   .bottom {
-//     bottom: 0;
-//   }
-
-//   .blue {
-//     color: blue;
-//     border-color: blue;
-//   }
-
-//   .yellow {
-//     color: yellow;
-//     border-color: yellow;
-//   }
-
-//   .center-text {
-//     position: absolute;
-//     height: 70vh;
-//     display: flex;
-//     flex-direction: column;
-//     justify-content: center;
-//   }
-
-//   .hint {
-//     p {
-//       font-size: 12pt;
-//       line-height: 1;
-//     }
-//     position: absolute;
-//     bottom: calc(max(-15vh, -120px));
-//   }
-
-//   .error {
-//     p {
-//       color: red;
-//     }
-//   }
-
-//   .green {
-//     p {
-//       color: green;
-//     }
-//     border-color: green;
-//   }
-// }
+.feedback_container {
+  font-size: 56px;
+  color: red;
+}

@@ -32,24 +32,25 @@ export interface FaceForTrial extends FaceForStroop {
   distractor: string;
 }
 
-function select_faces(faces: FaceForRating[]): FaceForRating[] {
+export function select_faces(faces: FaceForRating[]): FaceForRating[][] {
   const gender_equalizer = {
     male: faces.length / 4,
     female: faces.length / 4,
   };
-  const selected_faces = sortBy(shuffle(faces), ["rating"]).reduce(
-    (arr: FaceForRating[], face: FaceForRating) => {
-      if (gender_equalizer[face.gender] > 0) {
-        arr.push(face);
-        --gender_equalizer[face.gender];
-      }
 
-      return arr;
-    },
-    []
-  );
+  const selected_faces = [],
+    practice_faces = [];
 
-  return selected_faces;
+  for (const face of faces) {
+    if (gender_equalizer[face.gender] > 0) {
+      selected_faces.push(face);
+      --gender_equalizer[face.gender];
+    } else {
+      practice_faces.push(face);
+    }
+  }
+
+  return [practice_faces, selected_faces];
 }
 
 function prepare_PC(faces: FaceForRating[]): FaceForStroop[] {
@@ -99,7 +100,52 @@ class RotatingIndexArray {
   }
 }
 
-function create_blocks(
+function create_practice_blocks(faces: FaceForStroop[]): FaceForTrial[] {
+  const practice_sequence: FaceForTrial[] = [];
+  const pc_faces = {
+    mostly_congruent: faces.filter(
+      (face: FaceForStroop) =>
+        face.proportion_congruency === ProportionCongruency.mostly_congruent
+    ),
+    mostly_incongruent: faces.filter(
+      (face: FaceForStroop) =>
+        face.proportion_congruency === ProportionCongruency.mostly_incongruent
+    ),
+  };
+
+  for (const PC of Object.keys(pc_faces)) {
+    const rotating_index = new RotatingIndexArray(
+      ProportionCongruencySeed[PC],
+      pc_faces[PC].length
+    );
+    pc_faces[PC] = shuffle(cloneDeep(<FaceForStroop[]>pc_faces[PC]));
+
+    for (const index in pc_faces[PC]) {
+      const face = pc_faces[PC][index];
+      face.congruency =
+        rotating_index.indexArray[index] === 0
+          ? Congruency.congruent
+          : Congruency.incongruent;
+      face.position =
+        Math.round(Math.random()) === 0 ? Position.Up : Position.Down;
+
+      if (face.gender === "male") {
+        face.distractor =
+          rotating_index.indexArray[index] === 0 ? "MAN" : "WOMAN";
+      } else {
+        face.distractor =
+          rotating_index.indexArray[index] === 0 ? "WOMAN" : "MAN";
+      }
+    }
+  }
+
+  return shuffle([
+    ...(<FaceForTrial[]>pc_faces.mostly_congruent),
+    ...(<FaceForTrial[]>pc_faces.mostly_incongruent),
+  ]);
+}
+
+function create_trial_blocks(
   faces: FaceForStroop[],
   nr_blocks: number
 ): FaceForTrial[][] {
@@ -163,8 +209,12 @@ function create_blocks(
 }
 
 export function get_blocks(
-  faces: FaceForRating[],
+  practice_faces: FaceForRating[],
+  selected_faces: FaceForRating[],
   nr_blocks: number
-): FaceForTrial[][] {
-  return create_blocks(prepare_PC(select_faces(faces)), nr_blocks);
+): [FaceForTrial[], FaceForTrial[][]] {
+  return [
+    create_practice_blocks(prepare_PC(practice_faces)),
+    create_trial_blocks(prepare_PC(selected_faces), nr_blocks),
+  ];
 }

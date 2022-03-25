@@ -3,7 +3,7 @@ import { JsPsych } from "jspsych";
 import ImageSliderResponsePlugin from "@jspsych/plugin-image-slider-response";
 import { FaceForRating } from "./faces";
 
-export async function rating(
+export async function postrating(
   jsPsych: JsPsych,
   faces: FaceForRating[],
   base_timeline: any[]
@@ -23,7 +23,7 @@ export async function rating(
           on_finish(data) {
             faces.find(
               (face: FaceForRating) => face.img === get("img")
-            ).prerating = Math.abs(data.response);
+            ).postrating = Math.abs(data.response);
           },
         },
       ],

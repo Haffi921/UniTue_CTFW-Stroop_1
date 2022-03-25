@@ -2,11 +2,18 @@ import { JsPsych } from "jspsych";
 import HtmlKeyboardResponsePlugin from "@jspsych/plugin-html-keyboard-response";
 import { FaceForTrial } from "./trial_selection";
 
-export async function trial(
+export async function practice_trial(
   jsPsych: JsPsych,
-  sequence: FaceForTrial[][],
+  sequence: FaceForTrial[],
   base_timeline: any[]
 ) {
+  function remove_stim() {
+    const stim = document.getElementsByClassName("trial_container")[0];
+    if (stim !== undefined) {
+      stim.remove();
+    }
+  }
+
   const get = jsPsych.timelineVariable;
 
   function createDisplay(): string {
@@ -32,7 +39,6 @@ export async function trial(
     stimulus: createDisplay,
     choices: ["d", "l"],
     trial_duration: 1500,
-    post_trial_gap: 500,
     data() {
       return {
         distractor: get("distractor"),
@@ -46,12 +52,6 @@ export async function trial(
       };
     },
     on_load() {
-      function remove_stim() {
-        const stim = document.getElementsByClassName("trial_container")[0];
-        if (stim !== undefined) {
-          stim.remove();
-        }
-      }
       setTimeout(remove_stim, 1000);
     },
     on_finish(data: any) {
@@ -59,17 +59,40 @@ export async function trial(
         data.response,
         data.correct_key
       );
+      clearTimeout();
     },
+  };
+
+  const feedback = {
+    type: HtmlKeyboardResponsePlugin,
+    stimulus() {
+      //@ts-ignore
+      const data = jsPsych.data.getLastTrialData().trials[0];
+      const feedback_text =
+        data.rt < 100
+          ? "Too early"
+          : data.response === null
+          ? "Too late"
+          : data.correct
+          ? ""
+          : "Wrong";
+      return (
+        "<div class='feedback_container'>" +
+        `<p class="feedback">${feedback_text}</p>` +
+        "</div>"
+      );
+    },
+    choices: "NO_KEYS",
+    trial_duration: 1000,
+    post_trial_gap: 500,
   };
 
   const timeline = [...base_timeline];
 
-  for (let seq of sequence) {
-    timeline.push({
-      timeline: [fixation, target],
-      timeline_variables: seq,
-    });
-  }
+  timeline.push({
+    timeline: [fixation, target, feedback],
+    timeline_variables: sequence,
+  });
 
   await jsPsych.run(timeline);
 }

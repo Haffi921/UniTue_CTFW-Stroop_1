@@ -2,7 +2,8 @@ import { range } from "lodash";
 
 interface FaceForRating {
   img: string;
-  rating: number;
+  prerating: number;
+  postrating: number;
   gender: string;
   correct_key: string;
 }
@@ -26,7 +27,8 @@ const FACES: FaceForRating[] = FACES_IMAGES.map((image) => {
   const gender = image.indexOf("HM") === -1 ? "female" : "male";
   return {
     img: image,
-    rating: null,
+    prerating: null,
+    postrating: null,
     gender: gender,
     correct_key:
       gender === "male" ? (GROUP === 0 ? "d" : "l") : GROUP === 0 ? "l" : "d",
