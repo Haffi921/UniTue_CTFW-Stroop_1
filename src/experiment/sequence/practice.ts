@@ -1,6 +1,50 @@
 import { JsPsych } from "jspsych";
+
 import HtmlKeyboardResponsePlugin from "@jspsych/plugin-html-keyboard-response";
+import InstructionsPlugin from "@jspsych/plugin-instructions";
+
 import { FaceForTrial } from "./trial_selection";
+
+function instructions() {
+  const continue_hint = "Please press the right arrow key to continue &#x27A1";
+  const backtrack_hint = "&#x2B05 Left arrow key to go back";
+
+  function hint(backtrack = false) {
+    let text = continue_hint;
+    if (backtrack) {
+      text = continue_hint + "</p><p>" + backtrack_hint;
+    }
+
+    return `<p>${text}</p>`;
+  }
+
+  function page(...args) {
+    return `<p>${Array.from(args).join("</p><p>")}</p>`;
+  }
+
+  const instructions_pages = [
+    page("This is the second part out of four in this experiment"),
+    page(
+      "In this part, your task is to classify faces as either male or female",
+      "There will additionally be a word present. This word is not relevant and is to be ignored",
+      "Only respont to the face!"
+    ),
+    page(
+      "You will receive feedback whether you are right or wrong",
+      "Please try to be accurate, but also fast"
+    ),
+    // What keys?!
+    page(
+      "You may now begin",
+      "When you are ready to <b>start</b> press the right arrow key &#x27A1"
+    ),
+  ];
+
+  return {
+    type: InstructionsPlugin,
+    pages: instructions_pages,
+  };
+}
 
 export async function practice_trial(
   jsPsych: JsPsych,

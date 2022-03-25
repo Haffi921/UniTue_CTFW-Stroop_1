@@ -8,7 +8,7 @@ import { cloneDeep } from "lodash";
 import { FACES, FACES_IMAGES } from "./sequence/faces";
 import { get_blocks, select_faces } from "./sequence/trial_selection";
 
-import { rating } from "./sequence/rating";
+import { prerating } from "./sequence/prerating";
 import { trial } from "./sequence/trial";
 import { practice_trial } from "./sequence/practice";
 import { postrating } from "./sequence/postrating";
@@ -30,7 +30,7 @@ async function run() {
     message: "Loading...",
   });
 
-  await rating(jsPsych, FACES, base_timeline);
+  await prerating(jsPsych, FACES, base_timeline);
 
   const [PRACTICE_FACES, SEQUENCE_FACES] = select_faces(FACES);
 
