@@ -9,28 +9,32 @@ function instructions() {
   const continue_hint = "Please press the right arrow key to continue &#x27A1";
   const backtrack_hint = "&#x2B05 Left arrow key to go back";
 
-  function hint(backtrack = false) {
+  function hint(backtrack = true) {
     let text = continue_hint;
     if (backtrack) {
       text = continue_hint + "</p><p>" + backtrack_hint;
     }
 
-    return `<p>${text}</p>`;
+    return `<div class="hint"><p>${text}</p></div>`;
   }
 
-  function page(...args) {
-    return `<p>${Array.from(args).join("</p><p>")}</p>`;
+  function page(backtrack = true, ...args) {
+    return `<div class="instruction_container"><p>${Array.from(args).join(
+      "</p><p>"
+    )}</p>${hint(backtrack)}</div>`;
   }
 
   const instructions_pages = [
-    page("Welcome!"),
-    page("This is the first part out of four in this experiment"),
+    page(false, "Welcome!"),
+    page(true, "This is the first part out of four in this experiment"),
     page(
+      true,
       "In this part, we will present to you several faces",
       "Your task is to rate these faces on a sliding scale from -100 to +100 in terms of pleasantness",
       "-100 meaning very unpleasant and +100 meaning very pleasant"
     ),
     page(
+      true,
       "You may now begin",
       "When you are ready to <b>start</b> press the right arrow key &#x27A1"
     ),
@@ -60,10 +64,15 @@ export async function prerating(
           min: -100,
           slider_start: 0,
           labels: ["Very unpleasant (-100)", "0", "Very pleasant (100)"],
+          data() {
+            return {
+              block_type: "prerating",
+            };
+          },
           on_finish(data) {
             faces.find(
               (face: FaceForRating) => face.img === get("img")
-            ).prerating = Math.abs(data.response);
+            ).prerating = data.response;
           },
         },
       ],

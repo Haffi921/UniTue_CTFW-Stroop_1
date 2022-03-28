@@ -41,7 +41,7 @@ export function select_faces(faces: FaceForRating[]): FaceForRating[][] {
   const selected_faces = [],
     practice_faces = [];
 
-  for (const face of faces) {
+  for (const face of sortBy(faces, ["prerating"])) {
     if (gender_equalizer[face.gender] > 0) {
       selected_faces.push(face);
       --gender_equalizer[face.gender];
@@ -101,7 +101,6 @@ class RotatingIndexArray {
 }
 
 function create_practice_blocks(faces: FaceForStroop[]): FaceForTrial[] {
-  const practice_sequence: FaceForTrial[] = [];
   const pc_faces = {
     mostly_congruent: faces.filter(
       (face: FaceForStroop) =>
@@ -121,7 +120,7 @@ function create_practice_blocks(faces: FaceForStroop[]): FaceForTrial[] {
     pc_faces[PC] = shuffle(cloneDeep(<FaceForStroop[]>pc_faces[PC]));
 
     for (const index in pc_faces[PC]) {
-      const face = pc_faces[PC][index];
+      const face: FaceForTrial = pc_faces[PC][index];
       face.congruency =
         rotating_index.indexArray[index] === 0
           ? Congruency.congruent

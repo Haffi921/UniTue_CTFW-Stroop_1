@@ -21,7 +21,12 @@ const FACES_IMAGES: string[] = FACES_NAMES.reduce((arr, name) => {
   return arr;
 }, []);
 
-const GROUP = 0; //Math.round(Math.random());
+const GROUP = Math.round(Math.random());
+
+export const KEYS = [
+  ["d", "l"],
+  ["l", "d"],
+][GROUP];
 
 const FACES: FaceForRating[] = FACES_IMAGES.map((image) => {
   const gender = image.indexOf("HM") === -1 ? "female" : "male";
@@ -30,8 +35,7 @@ const FACES: FaceForRating[] = FACES_IMAGES.map((image) => {
     prerating: null,
     postrating: null,
     gender: gender,
-    correct_key:
-      gender === "male" ? (GROUP === 0 ? "d" : "l") : GROUP === 0 ? "l" : "d",
+    correct_key: gender === "male" ? KEYS[0] : KEYS[1],
   };
 });
 

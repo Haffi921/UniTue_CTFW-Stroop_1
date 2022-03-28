@@ -5,36 +5,45 @@ import InstructionsPlugin from "@jspsych/plugin-instructions";
 
 import { FaceForTrial } from "./trial_selection";
 
-function instructions() {
+function instructions(keys: string[]) {
   const continue_hint = "Please press the right arrow key to continue &#x27A1";
   const backtrack_hint = "&#x2B05 Left arrow key to go back";
 
-  function hint(backtrack = false) {
+  function hint(backtrack = true) {
     let text = continue_hint;
     if (backtrack) {
       text = continue_hint + "</p><p>" + backtrack_hint;
     }
 
-    return `<p>${text}</p>`;
+    return `<div class="hint"><p>${text}</p></div>`;
   }
 
-  function page(...args) {
-    return `<p>${Array.from(args).join("</p><p>")}</p>`;
+  function page(backtrack = true, ...args) {
+    return `<div class="instruction_container"><p>${Array.from(args).join(
+      "</p><p>"
+    )}</p>${hint(backtrack)}</div>`;
   }
 
   const instructions_pages = [
-    page("This is the second part out of four in this experiment"),
+    page(false, "This is the second part out of four in this experiment"),
+    page(true, "Please move your mouse cursor to the edge of your screen"),
     page(
+      true,
       "In this part, your task is to classify faces as either male or female",
       "There will additionally be a word present. This word is not relevant and is to be ignored",
-      "Only respont to the face!"
+      "Only respond to the face!"
     ),
     page(
+      true,
       "You will receive feedback whether you are right or wrong",
       "Please try to be accurate, but also fast"
     ),
-    // What keys?!
     page(
+      true,
+      `You should respond to male faces with [${keys[0].toUpperCase()}] and to female faces with [${keys[1].toUpperCase()}]`
+    ),
+    page(
+      true,
       "You may now begin",
       "When you are ready to <b>start</b> press the right arrow key &#x27A1"
     ),
@@ -49,7 +58,8 @@ function instructions() {
 export async function practice_trial(
   jsPsych: JsPsych,
   sequence: FaceForTrial[],
-  base_timeline: any[]
+  base_timeline: any[],
+  keys: string[]
 ) {
   function remove_stim() {
     const stim = document.getElementsByClassName("trial_container")[0];
@@ -93,6 +103,7 @@ export async function practice_trial(
         congruency: get("congruency"),
         position: get("position"),
         correct_key: get("correct_key"),
+        block_type: "practice",
       };
     },
     on_load() {
@@ -113,10 +124,10 @@ export async function practice_trial(
       //@ts-ignore
       const data = jsPsych.data.getLastTrialData().trials[0];
       const feedback_text =
-        data.rt < 100
-          ? "Too early"
-          : data.response === null
+        data.response === null
           ? "Too late"
+          : data.rt < 100
+          ? "Too early"
           : data.correct
           ? ""
           : "Wrong";
@@ -131,7 +142,7 @@ export async function practice_trial(
     post_trial_gap: 500,
   };
 
-  const timeline = [...base_timeline];
+  const timeline = [...base_timeline, instructions(keys)];
 
   timeline.push({
     timeline: [fixation, target, feedback],

@@ -1,6 +1,7 @@
 {
-  "title": "CSPC Flanker Task 2",
+  "title": "CTFW Stroop Task",
   "components": {
+    "informedConsent": "src/informedConsent",
     "experiment": "src/experiment"
   }
 }
