@@ -4,8 +4,8 @@ import InstructionsPlugin from "@jspsych/plugin-instructions";
 import { FaceForTrial } from "./trial_selection";
 
 function instructions(keys: string[]) {
-  const continue_hint = "Please press the right arrow key to continue &#x27A1";
-  const backtrack_hint = "&#x2B05 Left arrow key to go back";
+  const continue_hint = "Please press [L] key to continue &#x27A1";
+  const backtrack_hint = "&#x2B05 [D] key to go back";
 
   function hint(backtrack = true) {
     let text = continue_hint;
@@ -42,18 +42,25 @@ function instructions(keys: string[]) {
     ),
     page(
       true,
-      `You should respond to male faces with [${keys[0].toUpperCase()}] and to female faces with [${keys[1].toUpperCase()}]`
+      `You should respond to ${
+        keys[0] === "d" ? "" : "fe"
+      }male faces with [D] and to ${
+        keys[1] === "l" ? "fe" : ""
+      }male faces with [L]`
     ),
     page(
       true,
       "You may now begin",
-      "When you are ready to <b>start</b> press the right arrow key &#x27A1"
+      "When you are ready to <b>start</b> press the [L] key"
     ),
   ];
 
   return {
     type: InstructionsPlugin,
     pages: instructions_pages,
+    key_backward: "d",
+    key_forward: "l",
+    post_trial_gap: 1000,
   };
 }
 
