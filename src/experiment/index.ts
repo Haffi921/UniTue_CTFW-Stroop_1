@@ -4,7 +4,7 @@ import BrowserCheckPlugin from "@jspsych/plugin-browser-check";
 import PreloadPlugin from "@jspsych/plugin-preload";
 
 import { FACES, FACES_IMAGES, KEYS } from "./sequence/faces";
-import { get_blocks, select_faces } from "./sequence/trial_selection";
+import { get_block, select_faces } from "./sequence/trial_selection";
 
 import { prerating } from "./sequence/prerating";
 import { trial } from "./sequence/trial";
@@ -33,19 +33,21 @@ async function run() {
 
   await prerating(jsPsych, FACES, base_timeline);
 
-  const [PRACTICE_FACES, SEQUENCE_FACES] = select_faces(FACES);
+  const [PRACTICE_FACES, TRIAL_FACES] = select_faces(FACES);
 
-  const [PRACTICE_SEQUENCE, TRIAL_SEQUENCE] = get_blocks(
-    PRACTICE_FACES,
-    SEQUENCE_FACES,
-    10
-  );
+  const PRACTICE_SEQUENCE = get_block(PRACTICE_FACES, true);
+
+  const TRIAL_SEQUENCE = [];
+
+  for (let i = 0; i < 5; ++i) {
+    TRIAL_SEQUENCE.push(get_block(TRIAL_FACES));
+  }
 
   await practice_trial(jsPsych, PRACTICE_SEQUENCE, base_timeline, KEYS);
 
   await trial(jsPsych, TRIAL_SEQUENCE, base_timeline, KEYS);
 
-  await postrating(jsPsych, SEQUENCE_FACES, base_timeline);
+  await postrating(jsPsych, TRIAL_FACES, base_timeline);
 
   if (typeof jatos !== "undefined") {
     jatos

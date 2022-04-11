@@ -30,7 +30,7 @@ function instructions(keys: string[]) {
     page(
       true,
       "In this part, your task is to classify faces as either male or female",
-      "There will additionally be a word present. This word is not relevant and is to be ignored",
+      "Additionally, a word will be superimposed on the faces. This word is not relevant and is to be ignored",
       "Only respond to the face!"
     ),
     page(

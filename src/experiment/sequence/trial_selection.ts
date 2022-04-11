@@ -1,4 +1,4 @@
-import { sortBy, shuffle, cloneDeep } from "lodash";
+import { sortBy, shuffle, cloneDeep, flatten } from "lodash";
 
 import { FaceForRating } from "./faces";
 
@@ -30,18 +30,19 @@ export interface FaceForTrial extends FaceForStroop {
   congruency: Congruency;
   position: Position;
   distractor: string;
+  block_type: string;
 }
 
 export function select_faces(faces: FaceForRating[]): FaceForRating[][] {
   const gender_equalizer = {
-    male: faces.length / 4,
-    female: faces.length / 4,
+    male: 15,
+    female: 15,
   };
 
   const selected_faces = [],
     practice_faces = [];
 
-  for (const face of sortBy(faces, ["prerating"])) {
+  for (const face of sortBy(shuffle(faces), ["prerating"])) {
     if (gender_equalizer[face.gender] > 0) {
       selected_faces.push(face);
       --gender_equalizer[face.gender];
@@ -89,8 +90,8 @@ class RotatingIndexArray {
       arr.reduce((sum: number, value: number) => sum + value, 0);
     const multiplier = length / arrsum(seed);
 
-    this.indexArray = Array(seed[0] * multiplier).fill(0);
-    this.indexArray.push(...Array(seed[1] * multiplier).fill(1));
+    this.indexArray = Array(Math.round(seed[0] * multiplier)).fill(0);
+    this.indexArray.push(...Array(Math.round(seed[1] * multiplier)).fill(1));
   }
 
   forward(i: number = 1) {
@@ -100,7 +101,7 @@ class RotatingIndexArray {
   }
 }
 
-function create_practice_blocks(faces: FaceForStroop[]): FaceForTrial[] {
+function create_practice_block(faces: FaceForStroop[]): FaceForTrial[] {
   const pc_faces = {
     mostly_congruent: faces.filter(
       (face: FaceForStroop) =>
@@ -135,6 +136,8 @@ function create_practice_blocks(faces: FaceForStroop[]): FaceForTrial[] {
         face.distractor =
           rotating_index.indexArray[index] === 0 ? "WOMAN" : "MAN";
       }
+
+      face.block_type = "practice";
     }
   }
 
@@ -144,16 +147,7 @@ function create_practice_blocks(faces: FaceForStroop[]): FaceForTrial[] {
   ]);
 }
 
-function create_trial_blocks(
-  faces: FaceForStroop[],
-  nr_blocks: number
-): FaceForTrial[][] {
-  const sequence: FaceForTrial[][] = Array(nr_blocks).fill(null);
-
-  for (const block in sequence) {
-    sequence[block] = [];
-  }
-
+function create_trial_block(faces: FaceForStroop[]): FaceForTrial[] {
   const pc_faces = {
     mostly_congruent: faces.filter(
       (face: FaceForStroop) =>
@@ -165,6 +159,10 @@ function create_trial_blocks(
     ),
   };
 
+  let sequence: FaceForTrial[][] = Array(5)
+    .fill(null)
+    .map(() => []);
+
   for (const PC of Object.keys(pc_faces)) {
     const rotating_index = new RotatingIndexArray(
       ProportionCongruencySeed[PC],
@@ -172,7 +170,7 @@ function create_trial_blocks(
     );
     pc_faces[PC] = shuffle(pc_faces[PC]);
 
-    for (const block in sequence) {
+    for (let i = 0; i < 5; ++i) {
       const trial_faces = (<FaceForTrial[]>cloneDeep(pc_faces[PC])).map(
         (face: FaceForTrial, index: number) => {
           face.congruency =
@@ -190,30 +188,31 @@ function create_trial_blocks(
               rotating_index.indexArray[index] === 0 ? "WOMAN" : "MAN";
           }
 
+          face.block_type = "trial";
+
           return face;
         }
       );
 
-      sequence[block].push(...shuffle(trial_faces));
+      sequence[i].push(...shuffle(trial_faces));
 
       rotating_index.forward(3);
     }
-
-    for (const block in sequence) {
-      sequence[block] = shuffle(sequence[block]);
-    }
   }
 
-  return shuffle(sequence);
+  for (const index in sequence) {
+    sequence[index] = shuffle(sequence[index]);
+  }
+
+  return flatten(shuffle(sequence));
 }
 
-export function get_blocks(
-  practice_faces: FaceForRating[],
-  selected_faces: FaceForRating[],
-  nr_blocks: number
-): [FaceForTrial[], FaceForTrial[][]] {
-  return [
-    create_practice_blocks(prepare_PC(practice_faces)),
-    create_trial_blocks(prepare_PC(selected_faces), nr_blocks),
-  ];
+export function get_block(
+  faces: FaceForRating[],
+  practice: boolean = false
+): FaceForTrial[] {
+  if (practice) {
+    return create_practice_block(prepare_PC(faces));
+  }
+  return create_trial_block(prepare_PC(faces));
 }

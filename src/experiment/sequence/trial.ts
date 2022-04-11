@@ -28,7 +28,7 @@ function instructions(keys: string[]) {
     page(
       true,
       "In this part, your task is again to classify faces as either male or female",
-      "There will additionally be a word present. This word is not relevant and is to be ignored",
+      "Additionally, a word will be superimposed on the faces. This word is not relevant and is to be ignored",
       "Only respond to the face!"
     ),
     page(
@@ -148,8 +148,8 @@ export async function trial(
 
       if (data.response === null) too_late += 1;
       else if (data.rt < 100) too_early += 1;
-      else if (data.correct) incorrect += 1;
-      else correct += 1;
+      else if (data.correct) correct += 1;
+      else incorrect += 1;
     },
   };
 
@@ -157,7 +157,7 @@ export async function trial(
     type: HtmlKeyboardResponsePlugin,
     stimulus: "",
     on_start(trial) {
-      trial.timer = 60;
+      trial.end_time = new Date().getTime() + 60000;
       const stimulus = between_trial_stim(
         correct,
         incorrect,
@@ -165,9 +165,11 @@ export async function trial(
         too_late
       );
       const setTimer = () => {
-        trial.timer -= 1;
+        trial.timer = Math.floor(
+          (trial.end_time - new Date().getTime()) / 1000
+        );
         jsPsych.getDisplayElement().innerHTML = stimulus(trial.timer);
-        if (trial.timer > 0) setTimeout(setTimer, 1000);
+        if (trial.timer > 0) setTimeout(setTimer, 200);
       };
 
       setTimer();
