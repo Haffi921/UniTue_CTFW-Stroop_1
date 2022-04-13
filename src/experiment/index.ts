@@ -13,7 +13,13 @@ import { postrating } from "./sequence/postrating";
 import FullscreenPlugin from "@jspsych/plugin-fullscreen";
 
 async function run() {
-  const jsPsych = initJsPsych();
+  const jsPsych = initJsPsych({
+    on_finish() {
+      jatos
+        .submitResultData(jsPsych.data.get().csv())
+        .then(() => jatos.endStudy());
+    },
+  });
 
   const base_timeline = [];
 
