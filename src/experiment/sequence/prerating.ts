@@ -26,6 +26,10 @@ function instructions() {
 
   const instructions_pages = [
     page(false, "Welcome!"),
+    page(
+      true,
+      "Before we start, please make sure your browser's zoom level is set to 100% by pressing <b>Ctrl-0</b>"
+    ),
     page(true, "This is the first part out of four in this experiment"),
     page(
       true,

@@ -18,18 +18,19 @@ async function run() {
   const base_timeline = [];
 
   base_timeline.push({
-    type: BrowserCheckPlugin,
-    minimum_height: 625,
-    minimum_width: 625,
-  });
-
-  base_timeline.push({
     type: PreloadPlugin,
     images: FACES_IMAGES,
     message: "Loading...",
   });
 
-  await jsPsych.run([{ type: FullscreenPlugin, fullscreen_mode: true }]);
+  await jsPsych.run([
+    { type: FullscreenPlugin, fullscreen_mode: true },
+    {
+      type: BrowserCheckPlugin,
+      minimum_height: 625,
+      minimum_width: 625,
+    },
+  ]);
 
   await prerating(jsPsych, FACES, base_timeline);
 

@@ -4,10 +4,6 @@ import ExternalHtmlPlugin from "@jspsych/plugin-external-html";
 
 function run() {
   const jsPsych = initJsPsych({
-    exclusions: {
-      min_width: 625,
-      min_height: 625,
-    },
     on_finish() {
       jatos.startNextComponent(null, "Accepted");
     },
