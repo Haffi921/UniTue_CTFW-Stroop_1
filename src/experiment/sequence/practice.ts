@@ -62,10 +62,9 @@ function instructions(keys: string[]) {
   };
 }
 
-export async function practice_trial(
+export function practice_trial(
   jsPsych: JsPsych,
   sequence: FaceForTrial[],
-  base_timeline: any[],
   keys: string[]
 ) {
   function remove_stim() {
@@ -149,12 +148,13 @@ export async function practice_trial(
     post_trial_gap: 500,
   };
 
-  const timeline = [...base_timeline, instructions(keys)];
-
-  timeline.push({
-    timeline: [fixation, target, feedback],
-    timeline_variables: sequence,
-  });
-
-  await jsPsych.run(timeline);
+  return {
+    timeline: [
+      instructions(keys),
+      {
+        timeline: [fixation, target, feedback],
+        timeline_variables: sequence,
+      },
+    ],
+  };
 }

@@ -79,10 +79,9 @@ function between_trial_stim(
   };
 }
 
-export async function trial(
+export function trial(
   jsPsych: JsPsych,
   sequence: FaceForTrial[][],
-  base_timeline: any[],
   keys: string[]
 ) {
   const get = jsPsych.timelineVariable;
@@ -185,7 +184,7 @@ export async function trial(
     post_trial_gap: 1000,
   };
 
-  const timeline = [...base_timeline, instructions(keys)];
+  const timeline: any[] = [instructions(keys)];
 
   for (let seq of sequence) {
     timeline.push(
@@ -197,5 +196,5 @@ export async function trial(
     );
   }
 
-  await jsPsych.run(timeline);
+  return { timeline };
 }

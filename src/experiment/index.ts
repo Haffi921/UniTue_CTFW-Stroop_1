@@ -21,47 +21,38 @@ async function run() {
     },
   });
 
-  const base_timeline = [];
-
-  base_timeline.push({
-    type: PreloadPlugin,
-    images: FACES_IMAGES,
-    message: "Loading...",
-  });
-
-  await jsPsych.run([
+  const timeline = [
+    {
+      type: PreloadPlugin,
+      images: FACES_IMAGES,
+      message: "Loading...",
+    },
     { type: FullscreenPlugin, fullscreen_mode: true },
     {
       type: BrowserCheckPlugin,
       minimum_height: 625,
       minimum_width: 625,
     },
-  ]);
+    prerating(jsPsych, FACES, () => {
+      const [PRACTICE_FACES, TRIAL_FACES] = select_faces(FACES);
 
-  await prerating(jsPsych, FACES, base_timeline);
+      const PRACTICE_SEQUENCE = get_block(PRACTICE_FACES, true);
 
-  const [PRACTICE_FACES, TRIAL_FACES] = select_faces(FACES);
+      const TRIAL_SEQUENCE = [];
 
-  const PRACTICE_SEQUENCE = get_block(PRACTICE_FACES, true);
+      for (let i = 0; i < 5; ++i) {
+        TRIAL_SEQUENCE.push(get_block(TRIAL_FACES));
+      }
 
-  const TRIAL_SEQUENCE = [];
+      jsPsych.addNodeToEndOfTimeline(
+        practice_trial(jsPsych, PRACTICE_SEQUENCE, KEYS)
+      );
+      jsPsych.addNodeToEndOfTimeline(trial(jsPsych, TRIAL_SEQUENCE, KEYS));
+      jsPsych.addNodeToEndOfTimeline(postrating(jsPsych, TRIAL_FACES));
+    }),
+  ];
 
-  for (let i = 0; i < 5; ++i) {
-    TRIAL_SEQUENCE.push(get_block(TRIAL_FACES));
-  }
-
-  await practice_trial(jsPsych, PRACTICE_SEQUENCE, base_timeline, KEYS);
-
-  await trial(jsPsych, TRIAL_SEQUENCE, base_timeline, KEYS);
-
-  await postrating(jsPsych, TRIAL_FACES, base_timeline);
-
-  if (typeof jatos !== "undefined") {
-    jatos
-      .submitResultData(jsPsych.data.get().csv())
-      .then(() => jatos.endStudy())
-      .catch(() => console.log(jsPsych.data.get().csv()));
-  }
+  await jsPsych.run(timeline);
 }
 
 if (typeof jatos !== "undefined") {

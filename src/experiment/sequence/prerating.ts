@@ -52,40 +52,40 @@ function instructions() {
   };
 }
 
-export async function prerating(
+export function prerating(
   jsPsych: JsPsych,
   faces: FaceForRating[],
-  base_timeline: any[]
+  on_finish: () => void
 ) {
   const get = jsPsych.timelineVariable;
-  await jsPsych.run([
-    ...base_timeline,
-    instructions(),
-    {
-      timeline: [
-        {
-          type: ImageSliderResponsePlugin,
-          stimulus: get("img"),
-          prompt: "<p>How pleasant or unpleasant do judge this face?</p>",
-          min: -100,
-          slider_start: 0,
-          labels: ["Very unpleasant", "Neutral", "Very pleasant"],
-          data() {
-            return {
-              block_type: "prerating",
-            };
+  return {
+    timeline: [
+      instructions(),
+      {
+        timeline: [
+          {
+            type: ImageSliderResponsePlugin,
+            stimulus: get("img"),
+            prompt: "<p>How pleasant or unpleasant do judge this face?</p>",
+            min: -100,
+            slider_start: 0,
+            labels: ["Very unpleasant", "Neutral", "Very pleasant"],
+            data() {
+              return {
+                block_type: "prerating",
+              };
+            },
+            on_finish(data) {
+              faces.find(
+                (face: FaceForRating) => face.img === get("img")
+              ).prerating = data.response;
+            },
           },
-          on_finish(data) {
-            faces.find(
-              (face: FaceForRating) => face.img === get("img")
-            ).prerating = data.response;
-          },
-        },
-      ],
-      timeline_variables: faces,
-      randomize_order: true,
-    },
-  ]);
-
-  return faces;
+        ],
+        timeline_variables: faces,
+        randomize_order: true,
+        on_timeline_finish: on_finish,
+      },
+    ],
+  };
 }
