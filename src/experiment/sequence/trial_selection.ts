@@ -31,6 +31,8 @@ export interface FaceForTrial extends FaceForStroop {
   position: Position;
   distractor: string;
   block_type: string;
+  block_nr?: number;
+  trial_nr: number;
 }
 
 export function select_faces(faces: FaceForRating[]): FaceForRating[][] {
@@ -137,6 +139,8 @@ function create_practice_block(faces: FaceForStroop[]): FaceForTrial[] {
           rotating_index.indexArray[index] === 0 ? "WOMAN" : "MAN";
       }
 
+      face.trial_nr = parseInt(index);
+
       face.block_type = "practice";
     }
   }
@@ -189,6 +193,8 @@ function create_trial_block(faces: FaceForStroop[]): FaceForTrial[] {
           }
 
           face.block_type = "trial";
+          face.block_nr = i + 1;
+          face.trial_nr = index;
 
           return face;
         }

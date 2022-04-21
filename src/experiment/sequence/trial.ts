@@ -125,7 +125,9 @@ export function trial(
         congruency: get("congruency"),
         position: get("position"),
         correct_key: get("correct_key"),
-        block_type: "trial",
+        block_type: get("block_type"),
+        block_nr: get("block_nr"),
+        trial_nr: get("trial_nr"),
       };
     },
     on_load() {
