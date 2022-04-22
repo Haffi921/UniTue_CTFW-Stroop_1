@@ -37,8 +37,8 @@ export interface FaceForTrial extends FaceForStroop {
 
 export function select_faces(faces: FaceForRating[]): FaceForRating[][] {
   const gender_equalizer = {
-    male: 15,
-    female: 15,
+    male: 20,
+    female: 20,
   };
 
   const selected_faces = [],
@@ -202,7 +202,7 @@ function create_trial_block(faces: FaceForStroop[]): FaceForTrial[] {
 
       sequence[i].push(...shuffle(trial_faces));
 
-      rotating_index.forward(3);
+      rotating_index.forward(4);
     }
   }
 

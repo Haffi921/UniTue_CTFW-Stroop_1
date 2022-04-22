@@ -40,7 +40,7 @@ async function run() {
 
       const TRIAL_SEQUENCE = [];
 
-      for (let i = 0; i < 5; ++i) {
+      for (let i = 0; i < 4; ++i) {
         TRIAL_SEQUENCE.push(get_block(TRIAL_FACES));
       }
 
