@@ -36,12 +36,12 @@ async function run() {
     prerating(jsPsych, FACES, () => {
       const [PRACTICE_FACES, TRIAL_FACES] = select_faces(FACES);
 
-      const PRACTICE_SEQUENCE = get_block(PRACTICE_FACES, true);
+      const PRACTICE_SEQUENCE = get_block(PRACTICE_FACES, 0, true);
 
       const TRIAL_SEQUENCE = [];
 
       for (let i = 0; i < 4; ++i) {
-        TRIAL_SEQUENCE.push(get_block(TRIAL_FACES));
+        TRIAL_SEQUENCE.push(get_block(TRIAL_FACES, i + 1));
       }
 
       jsPsych.addNodeToEndOfTimeline(

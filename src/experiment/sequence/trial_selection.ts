@@ -139,8 +139,6 @@ function create_practice_block(faces: FaceForStroop[]): FaceForTrial[] {
           rotating_index.indexArray[index] === 0 ? "WOMAN" : "MAN";
       }
 
-      face.trial_nr = parseInt(index);
-
       face.block_type = "practice";
     }
   }
@@ -193,8 +191,6 @@ function create_trial_block(faces: FaceForStroop[]): FaceForTrial[] {
           }
 
           face.block_type = "trial";
-          face.block_nr = i + 1;
-          face.trial_nr = index;
 
           return face;
         }
@@ -215,10 +211,19 @@ function create_trial_block(faces: FaceForStroop[]): FaceForTrial[] {
 
 export function get_block(
   faces: FaceForRating[],
+  block: number,
   practice: boolean = false
 ): FaceForTrial[] {
   if (practice) {
-    return create_practice_block(prepare_PC(faces));
+    return create_practice_block(prepare_PC(faces)).map((face, index) => {
+      face.trial_nr = index + 1;
+      face.block_nr = block;
+      return face;
+    });
   }
-  return create_trial_block(prepare_PC(faces));
+  return create_trial_block(prepare_PC(faces)).map((face, index) => {
+    face.trial_nr = index + 1;
+    face.block_nr = block;
+    return face;
+  });
 }
